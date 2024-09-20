@@ -6,6 +6,7 @@ import compression from "compression";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import router from "./router";
 
 dotenv.config();
 
@@ -32,3 +33,5 @@ mongoose.connect(process.env.MONGO_URL);
 mongoose.connection.on("error", (error: Error) => {
   console.log("Erro to connect no dataBase", error);
 });
+
+app.use("/", router());
