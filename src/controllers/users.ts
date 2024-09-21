@@ -46,7 +46,7 @@ export const editUser = async (req: Request, res: Response) => {
 
     if (!edit) res.status(400).send("Ocorreu um erro ao editar o usuário!");
 
-    return res.status(200).send("Usuário editado com sucesso!").end();
+    return res.status(200).json(edit).end();
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
