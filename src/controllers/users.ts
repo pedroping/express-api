@@ -1,3 +1,4 @@
+import { IUser } from "../models/user";
 import { deleteUserById, getUsers, updateUserById } from "../db/users";
 import { Request, Response } from "express";
 
@@ -7,7 +8,13 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
     if (!users) return res.sendStatus(400);
 
-    return res.status(200).json(users).end();
+    const mappedUsers: IUser[] = users.map((user) => ({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    }));
+
+    return res.status(200).json(mappedUsers).end();
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
@@ -42,11 +49,17 @@ export const editUser = async (req: Request, res: Response) => {
     if (!email || !username)
       return res.status(400).send("Parâmetros invalidos ou inexistentes!");
 
-    const edit = await updateUserById(id, { email, username });
+    const user = await updateUserById(id, { email, username });
 
-    if (!edit) res.status(400).send("Ocorreu um erro ao editar o usuário!");
+    if (!user) res.status(400).send("Ocorreu um erro ao editar o usuário!");
 
-    return res.status(200).json(edit).end();
+    const mappedUser: IUser = {
+      username: user.username,
+      email: user.email,
+      id: user.id,
+    };
+
+    return res.status(200).json(mappedUser).end();
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);

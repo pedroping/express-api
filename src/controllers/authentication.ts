@@ -2,6 +2,7 @@ import { createUser, getUserByEmail } from "../db/users";
 import { Request, Response } from "express";
 import { auth } from "../utils/auth";
 import { randomId } from "../utils/randomId";
+import { IUser } from "../models/user";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -25,14 +26,13 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
-    const data = {
-      authentication: user.authentication,
-      id: user._id,
+    const mappedUser: IUser = {
+      id: user._id.toString(),
       username: user.username,
       email: user.email,
     };
 
-    return res.status(200).json(data).end();
+    return res.status(200).json(mappedUser).end();
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
@@ -67,14 +67,14 @@ export const login = async (req: Request, res: Response) => {
       path: "/",
     });
 
-    const data = {
-      authentication: user.authentication,
-      id: user._id,
+    const mappedUser: IUser = {
+      sessionToken: user.authentication.sessionToken,
+      id: user._id.toString(),
       username: user.username,
       email: user.email,
     };
 
-    return res.status(200).json(data).end();
+    return res.status(200).json(mappedUser).end();
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
