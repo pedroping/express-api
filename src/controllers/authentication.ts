@@ -25,7 +25,56 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(200).json(user).end();
+    const data = {
+      authentication: user.authentication,
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    };
+
+    return res.status(200).json(data).end();
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password)
+      return res.status(400).send("Parametros invalidos!");
+
+    const user = await getUserByEmail(email).select(
+      "+authentication.salt, +authentication.password"
+    );
+
+    if (!user) return res.status(401).send("Usuário não encontrado!");
+
+    const hash = auth(user.authentication.salt, password);
+
+    if (user.authentication.password != hash)
+      return res.send(401).send("Senha invalida");
+
+    const salt = randomId();
+    user.authentication.sessionToken = auth(salt, user._id.toString());
+
+    await user.save();
+
+    res.cookie(process.env.AUTH, user.authentication.sessionToken, {
+      domain: "localhost",
+      path: "/",
+    });
+
+    const data = {
+      authentication: user.authentication,
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    };
+
+    return res.status(200).json(data).end();
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
