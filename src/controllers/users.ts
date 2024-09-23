@@ -1,6 +1,12 @@
 import { IUser } from "../models/user";
-import { deleteUserById, getUsers, updateUserById } from "../db/users";
+import {
+  deleteUserById,
+  getUserById,
+  getUsers,
+  updateUserById,
+} from "../db/users";
 import { Request, Response } from "express";
+import { isValidObjectId } from "mongoose";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -25,7 +31,8 @@ export const deleteUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    if (!id) return res.status(400).send("Id invalido ou inexistente!");
+    if (!id || !isValidObjectId(id))
+      return res.status(400).send("Id invalido ou inexistente!");
 
     const deletedUser = await deleteUserById(id);
 
@@ -39,12 +46,37 @@ export const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
+export const getUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || !isValidObjectId(id))
+      return res.status(400).send("Id invalido ou inexistente!");
+
+    const user = await getUserById(id);
+
+    if (!user) res.status(400).send("Usuário não encontrado!");
+
+    const mappedUser: IUser = {
+      email: user.email,
+      id: user._id.toString(),
+      username: user.username,
+    };
+
+    return res.status(200).json(mappedUser).end();
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
 export const editUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { email, username } = req.body;
 
-    if (!id) return res.status(400).send("Id invalido ou inexistente!");
+    if (!id || !isValidObjectId(id))
+      return res.status(400).send("Id invalido ou inexistente!");
 
     if (!email || !username)
       return res.status(400).send("Parâmetros invalidos ou inexistentes!");
