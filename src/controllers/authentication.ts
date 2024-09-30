@@ -32,10 +32,10 @@ export const register = async (req: Request, res: Response) => {
       email: user.email,
     };
 
-    return res.status(200).json(mappedUser).end();
+    return res.sendStatus(200).json(mappedUser).end();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(400);
+    return res.status(400);
   }
 };
 
@@ -55,7 +55,7 @@ export const login = async (req: Request, res: Response) => {
     const hash = auth(user.authentication.salt, password);
 
     if (user.authentication.password != hash)
-      return res.send(401).send("Senha invalida");
+      return res.status(401).send("Senha invalida");
 
     const salt = randomId();
     user.authentication.sessionToken = auth(salt, user._id.toString());
@@ -74,9 +74,9 @@ export const login = async (req: Request, res: Response) => {
       email: user.email,
     };
 
-    return res.status(200).json(mappedUser).end();
+    return res.sendStatus(200).json(mappedUser).end();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(400);
+    return res.status(400);
   }
 };
