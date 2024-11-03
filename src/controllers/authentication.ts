@@ -32,7 +32,7 @@ export const register = async (req: Request, res: Response) => {
       email: user.email,
     };
 
-    return res.sendStatus(200).json(mappedUser).end();
+    return res.status(200).json(mappedUser).end();
   } catch (error) {
     console.log(error);
     return res.status(400);
@@ -74,7 +74,7 @@ export const login = async (req: Request, res: Response) => {
       email: user.email,
     };
 
-    return res.sendStatus(200).json(mappedUser).end();
+    return res.status(200).json(mappedUser).end();
   } catch (error) {
     console.log(error);
     return res.status(400);
