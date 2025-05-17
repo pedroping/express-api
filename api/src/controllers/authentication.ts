@@ -63,12 +63,14 @@ export const login = async (req: Request, res: Response) => {
     await user.save();
 
     res.cookie(process.env.AUTH, user.authentication.sessionToken, {
-      domain: "localhost",
       path: "/",
+      httpOnly: true,
+      maxAge: 2592000,
+      sameSite: "none",
+      secure: true,
     });
 
     const mappedUser: IUser = {
-      sessionToken: user.authentication.sessionToken,
       id: user._id.toString(),
       username: user.username,
       email: user.email,
